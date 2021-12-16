@@ -21,8 +21,7 @@ export default function App() {
     }
     setInterv(observable$.subscribe(setTime));
     setStatus(1);
-  }
-   console.log('time', time);
+  };
   
   const wait = () => {
     if (isClicked) {
