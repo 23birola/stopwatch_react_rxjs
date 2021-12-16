@@ -1,5 +1,8 @@
 import { useState } from "react";
 import "./App.css";
+import { interval, startWith, scan } from 'rxjs';
+
+const observable$ = interval(1000).pipe(startWith(0), scan(time=>time+1));
 
 export default function App() {
   const [time, setTime] = useState(0);
@@ -7,22 +10,24 @@ export default function App() {
   const [status, setStatus] = useState(0);
   const [interv, setInterv] = useState(0);
 
+
   const start = () => {
     if (status === 1) {
-      clearInterval(interv);
+      interv.unsubscribe();
       setTime(0);
       setStatus(0);
       setInterv(0);
       return;
     }
-    setInterv(setInterval(run, 1000));
+    setInterv(observable$.subscribe(setTime));
     setStatus(1);
   }
+   console.log('time', time);
   
   const wait = () => {
     if (isClicked) {
-       if (interv) {
-         clearInterval(interv);
+      if (interv) {
+         interv.unsubscribe();
          setIsClicked(false);
          setStatus(0);
          return;
@@ -33,15 +38,11 @@ export default function App() {
    
  }
 
-  const run = () => {
-    return setTime(prevTime => prevTime + 1);
-  }
-
   const reset = () => {
     if (interv) {
-      clearInterval(interv);
+      interv.unsubscribe();
       setTime(0);
-      setInterv(setInterval(run, 1000));
+      setInterv(observable$.subscribe(setTime));
       setStatus(1);
       return;
     }
